@@ -61,8 +61,7 @@ public class ChannelController {
 	@DeleteMapping("/deleteAll")
 	public String deleteAll() {
 		channelService.deleteAll();
-		return "Deleted 
-		all info";
+		return "Deleted  all info";
 	}
 	
 	
