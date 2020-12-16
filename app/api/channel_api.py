@@ -4,7 +4,7 @@ from app.database.schema import Channel
 from app.services.controller import fetch_channel, create_channel, remove_channel
 channelsRouter = APIRouter()
 
-@channelsRouter.get('/channels')
+@channelsRouter.get('/channels/all')
 async def get_Channel():
     """
     Endpoint to get all the channels
@@ -18,7 +18,7 @@ async def get_Channel():
     """
     return fetch_channel()
 
-@channelsRouter.post('/channels')
+@channelsRouter.post('/channels/create')
 async def post_channel(channel: Channel):
     """
     Args : channel -> Channel
@@ -30,7 +30,7 @@ async def post_channel(channel: Channel):
     """
     return create_channel(channel)
 
-@channelsRouter.delete("/channels/{id}", response_description="Delete channel")
+@channelsRouter.delete("/channels/delete/{id}", response_description="Delete channel")
 async def delete_channel(id: str):
     """
     Args: 
