@@ -1,11 +1,11 @@
 from fastapi import APIRouter,HTTPException
 from bson import ObjectId
 from app.database.schema import Channel
-from app.services.controller import fetch_channel, create_channel, remove_channel
+from app.services.controller import fetch_channels, create_channel, remove_channel, update_channel
 channelsRouter = APIRouter()
 
 @channelsRouter.get('/channels/all')
-async def get_Channel():
+async def get_Channels():
     """
     Endpoint to get all the channels
 
@@ -16,7 +16,20 @@ async def get_Channel():
 
     Return type: list
     """
-    return fetch_channel()
+    return fetch_channels()
+
+# @channelsRouter.get('/channels/info/{id}')
+# async def getChannel(id: str):
+#     """
+#     Endpoint to get info of a channel
+
+#     Args:
+#         id (str): [channel_id of channel whose info is required]
+
+#     Returns:
+#         [type]: [description]
+#     """
+#     return fetch_channel(id)
 
 @channelsRouter.post('/channels/create')
 async def post_channel(channel: Channel):
@@ -26,9 +39,22 @@ async def post_channel(channel: Channel):
     This endpoint is used to create a new channel in the database
     is handeled by controller function create_channel()
 
-    return type : list
+    return type : Channel
     """
     return create_channel(channel)
+
+@channelsRouter.post("/channels/info/{id}", response_description="update channel")
+async def edit_channel(id: str, data: dict):
+    """
+    endpoint to update channel info
+
+    Args:
+        id (str): [channel id which is being edited]
+
+    Returns:
+        Channel [dict]: [updated channel info]
+    """
+    return update_channel(id, dict)
 
 @channelsRouter.delete("/channels/delete/{id}", response_description="Delete channel")
 async def delete_channel(id: str):
