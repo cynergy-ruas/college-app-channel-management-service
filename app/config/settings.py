@@ -10,4 +10,4 @@ MONGODB_URI ="mongodb+srv://"+user_name+":"+password+"@ruas-app.63rrs.mongodb.ne
 PORT = 8000
 #channels
 CHANNEL_DB = "channels"
-
+MEMBERSHIP_DB = "membership" 

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from app.config.config import channel_DB
+from datetime import date
 
 
 class PyObjectId(ObjectId):
@@ -33,24 +34,37 @@ class PyObjectId(ObjectId):
 #creating channel class to store schema 
 class Channel(BaseModel):
     """
-     The Schema for our data model 
-    
-     Schema :
-        _id -> Object ID,
-        Name -> string,
-        description -> string,
-        members -> List[string]
-        type -> string
-        dp -> string
-        admins -> List[string]
+    schema of CHANNEL_DB
+
+    Args:
+        BaseModel : a base class for building model objects/ schemas
     """
     id: Optional[PyObjectId] = Field(alias='_id')
     name: str
     description: Optional[str] = None
-    members: List[str] = []
+    created_at: date
     type: str
-    dp:Optional[str]
     admins:List[str] = []
+    owner:str
+    category: str
+
+    class Config:
+        """
+        Convertion of Object ID into String 
+        """
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str
+            }
+
+class Membership(BaseModel):
+    """[summary]
+
+    Args:
+        BaseModel ([type]): [description]
+    """
+    id: Optional[PyObjectId] = Field(alias='_id')
+    channel_id: List[str] = []
 
     class Config:
         """
