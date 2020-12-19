@@ -1,6 +1,13 @@
+import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 
-MONGODB_URI ="mongodb+srv://<username>:<password>@cluster0.fomdd.mongodb.net/springcheck?retryWrites=true&w=majority"
+user_name = os.environ.get('MONGO_USER')
+password = os.environ.get('MONGO_PASSWORD')
+DB_NAME= os.environ.get('MONGO_DB')
+print(user_name,password,DB_NAME)
+MONGODB_URI ="mongodb+srv://"+user_name+":"+password+"@ruas-app.63rrs.mongodb.net/"+DB_NAME+"?retryWrites=true&w=majority"
 PORT = 8000
-DB_NAME= "<db_name>"
-CHANNEL_DB= "channels"
-#use channels as your collection name
+#channels
+CHANNEL_DB = "channels"
+
