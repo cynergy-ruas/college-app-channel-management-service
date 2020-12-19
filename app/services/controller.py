@@ -5,7 +5,7 @@ channelsRouter = APIRouter()
 from app.config.config import channel_DB
 from bson import ObjectId
 
-def fetch_channel():
+def fetch_channels():
     """
     Args : none
 
@@ -35,6 +35,13 @@ def create_channel(channel: Channel) -> Channel:
     channel.id = newChannel.inserted_id
     return {'channel': channel}    
 
+# def update_channel(id: str, data: dict) -> Channel:
+#     # Return false if an empty request body is sent.
+#     print(data)
+#     check_channel = channel_DB().find_one({"_id": ObjectId(id)})
+#     print(check_channel)
+#     updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": data})
+#     return {'channel': updated_channel}
 
 #custom exception 
 #https://www.programiz.com/python-programming/user-defined-exception
