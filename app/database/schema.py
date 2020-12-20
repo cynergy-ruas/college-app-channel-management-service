@@ -1,13 +1,8 @@
 from bson import ObjectId
 from typing import List, Optional
-from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
-from app.config.config import channel_DB
 import datetime 
-
-today = datetime.datetime.now()
-
 
 class PyObjectId(ObjectId):
     """
@@ -42,7 +37,6 @@ class Channel(BaseModel):
         BaseModel : a base class for building model objects/ schemas
     """
     id: Optional[PyObjectId] = Field(alias='_id')
-    # id: Optional[str]
     name: str
     description: Optional[str] 
     created_at: Optional[datetime.datetime] 
@@ -59,24 +53,7 @@ class Channel(BaseModel):
         json_encoders = {
             ObjectId: str
             }
-
-# class Change_channel(BaseModel):
-
-#     # id: Optional[PyObjectId] = Field(alias='_id')
-#     name: Optional[str]
-#     description: Optional[str] 
-#     # type: Optional[str]
-#     # category: Optional[str]
-
-#     # class Config:
-#     #     """
-#     #     Convertion of Object ID into String 
-#     #     """
-#     #     arbitrary_types_allowed = True
-#     #     json_encoders = {
-#     #         ObjectId: str
-#     #         }
-
+            
 # class Membership(BaseModel):
 #     """[summary]
 

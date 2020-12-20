@@ -1,13 +1,13 @@
 from fastapi import FastAPI,APIRouter,HTTPException
 from app.database.schema import Channel
-# , Change_channel
+from app.database.update_modal import Change_channel
 from bson.objectid import ObjectId
 channelsRouter = APIRouter() 
 from app.config.config import channel_DB
 from bson import ObjectId
 import datetime
 
-def fetch_channels():
+def fetch_channels() -> list:
     """
     Args : none
 
@@ -21,7 +21,7 @@ def fetch_channels():
         channels_list.append(Channel(**each_channel))
     return channels_list
 
-def fetch_channel(id):
+def fetch_channel(id) -> dict:
     """
     fetch details of a channel with the given _id
 
@@ -47,17 +47,15 @@ def create_channel(channel: Channel) -> Channel:
     if hasattr(channel, 'id'):
         delattr(channel, 'id')
     channel.created_at= datetime.datetime.now()
-    # channel.id= str(uuid.uuid4())
     newChannel = channel_DB().insert_one(channel.dict(by_alias=True))
     channel.id = newChannel.inserted_id
     return {'channel': channel}    
 
-# def update_channel(id: str, new_data: Change_channel) -> Channel:
-#     print(new_data)
-#     check_channel = channel_DB().find_one({"_id": ObjectId(id)})
-#     print(check_channel)
-#     updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": new_data})
-#     return "channel is updated"
+def update_channel(id: str, new_data: Change_channel) -> Channel:
+    check_channel = channel_DB().find_one({"_id": ObjectId(id)})
+    #need to add a checking logic if the channel exist or not using above request
+    updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": dict(new_data)})
+    return "channel is updated"
 
 #custom exception 
 #https://www.programiz.com/python-programming/user-defined-exception
@@ -86,7 +84,6 @@ def remove_channel(id: str):
             return("sueach_channelessfully deleted")
 
     except RandomError:
-        print("Channel not found")
         return "channel not found"      
 
         
