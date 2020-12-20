@@ -53,9 +53,27 @@ def create_channel(channel: Channel) -> Channel:
 
 def update_channel(id: str, new_data: Change_channel) -> Channel:
     check_channel = channel_DB().find_one({"_id": ObjectId(id)})
-    #need to add a checking logic if the channel exist or not using above request
-    updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": dict(new_data)})
-    return "channel is updated"
+
+    if check_channel is None:
+        return "channel not found, wrong id"
+    else:
+        UPDATE_data = dict(new_data) 
+        
+        if(UPDATE_data['name']== None):
+            UPDATE_data['name']= check_channel['name']
+
+        if(UPDATE_data['description']== None):
+            UPDATE_data['description']= check_channel['description']
+
+        if(UPDATE_data['type']== None):
+            UPDATE_data['type']= check_channel['type']
+
+        if(UPDATE_data['category']== None):
+            UPDATE_data['category']= check_channel['category']
+
+        #need to add a checking logic if the channel exist or not using above request
+        updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": UPDATE_data})
+        return "channel is updated"
 
 #custom exception 
 #https://www.programiz.com/python-programming/user-defined-exception
