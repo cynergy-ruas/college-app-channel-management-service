@@ -17,21 +17,23 @@ def fetch_channels():
     """
     channels_list = []
     query = channel_DB().find({"type":"public"})
-    for x in query:
-        channels_list.append(Channel(**x))
-        print(type(x))
-        # x['id']=str(x['_id'])
-        # x.pop("_id")
-        print(x)
+    for each_channel in query:
+        channels_list.append(Channel(**each_channel))
     return channels_list
 
-# def fetch_channel(id):
-#     req_channel=[]
-#     query = channel_DB().find_one({"_id": ObjectId(id)})
-#     for x in query:
-#         req_channel.append(Channel(**x))
-#         x.pop("_id")
-#     return 
+def fetch_channel(id):
+    """
+    fetch details of a channel with the given _id
+
+    Args:
+        id (str): id created by the mongoDB
+
+    Returns:
+        channel_details[dict]: [the details of the channel requested]
+    """
+    channel_details = dict(channel_DB().find_one({"_id": ObjectId(id)}))
+    channel_details.pop("_id")
+    return channel_details
 
 def create_channel(channel: Channel) -> Channel:
     """
