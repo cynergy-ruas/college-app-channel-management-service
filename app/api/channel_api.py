@@ -1,8 +1,9 @@
 from fastapi import APIRouter,HTTPException
 from bson import ObjectId
 from app.database.schema import Channel
+# , Change_channel
 from app.services.controller import fetch_channels, create_channel, remove_channel
-#, update_channel
+# , update_channel, fetch_channel
 channelsRouter = APIRouter()
 
 @channelsRouter.get('/channels/all')
@@ -45,7 +46,7 @@ async def post_channel(channel: Channel):
     return create_channel(channel)
 
 # @channelsRouter.post("/channels/info/{id}", response_description="update channel")
-# async def edit_channel(id: str, data: dict):
+# async def edit_channel(id: str, new_data: Change_channel):
 #     """
 #     endpoint to update channel info
 
@@ -55,7 +56,7 @@ async def post_channel(channel: Channel):
 #     Returns:
 #         Channel [dict]: [updated channel info]
 #     """
-#     return update_channel(id, dict)
+#     return update_channel(id, new_data)
 
 @channelsRouter.delete("/channels/delete/{id}", response_description="Delete channel")
 async def delete_channel(id: str):

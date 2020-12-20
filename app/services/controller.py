@@ -1,9 +1,11 @@
 from fastapi import FastAPI,APIRouter,HTTPException
 from app.database.schema import Channel
+# , Change_channel
 from bson.objectid import ObjectId
 channelsRouter = APIRouter() 
 from app.config.config import channel_DB
 from bson import ObjectId
+import datetime
 
 def fetch_channels():
     """
@@ -14,11 +16,22 @@ def fetch_channels():
     Return type : List
     """
     channels_list = []
-    for channel in channel_DB().find():
-        each_channel=dict(list(Channel(**channel)))
-        if (each_channel['type']=="public"):
-            channels_list.append(Channel(**channel))
-    return {'channels': channels_list}
+    query = channel_DB().find({"type":"public"})
+    for x in query:
+        channels_list.append(Channel(**x))
+        print(type(x))
+        # x['id']=str(x['_id'])
+        # x.pop("_id")
+        print(x)
+    return channels_list
+
+# def fetch_channel(id):
+#     req_channel=[]
+#     query = channel_DB().find_one({"_id": ObjectId(id)})
+#     for x in query:
+#         req_channel.append(Channel(**x))
+#         x.pop("_id")
+#     return 
 
 def create_channel(channel: Channel) -> Channel:
     """
@@ -31,17 +44,18 @@ def create_channel(channel: Channel) -> Channel:
     """
     if hasattr(channel, 'id'):
         delattr(channel, 'id')
+    channel.created_at= datetime.datetime.now()
+    # channel.id= str(uuid.uuid4())
     newChannel = channel_DB().insert_one(channel.dict(by_alias=True))
     channel.id = newChannel.inserted_id
     return {'channel': channel}    
 
-# def update_channel(id: str, data: dict) -> Channel:
-#     # Return false if an empty request body is sent.
-#     print(data)
+# def update_channel(id: str, new_data: Change_channel) -> Channel:
+#     print(new_data)
 #     check_channel = channel_DB().find_one({"_id": ObjectId(id)})
 #     print(check_channel)
-#     updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": data})
-#     return {'channel': updated_channel}
+#     updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": new_data})
+#     return "channel is updated"
 
 #custom exception 
 #https://www.programiz.com/python-programming/user-defined-exception

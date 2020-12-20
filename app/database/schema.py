@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from app.config.config import channel_DB
-from datetime import date
+import datetime 
+
+today = datetime.datetime.now()
 
 
 class PyObjectId(ObjectId):
@@ -40,9 +42,10 @@ class Channel(BaseModel):
         BaseModel : a base class for building model objects/ schemas
     """
     id: Optional[PyObjectId] = Field(alias='_id')
+    # id: Optional[str]
     name: str
-    description: Optional[str] = None
-    created_at: date
+    description: Optional[str] 
+    created_at: Optional[datetime.datetime] 
     type: str
     admins:List[str] = []
     owner:str
@@ -57,20 +60,37 @@ class Channel(BaseModel):
             ObjectId: str
             }
 
-class Membership(BaseModel):
-    """[summary]
+# class Change_channel(BaseModel):
 
-    Args:
-        BaseModel ([type]): [description]
-    """
-    id: Optional[PyObjectId] = Field(alias='_id')
-    channel_id: List[str] = []
+#     # id: Optional[PyObjectId] = Field(alias='_id')
+#     name: Optional[str]
+#     description: Optional[str] 
+#     # type: Optional[str]
+#     # category: Optional[str]
 
-    class Config:
-        """
-        Convertion of Object ID into String 
-        """
-        arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str
-            }
+#     # class Config:
+#     #     """
+#     #     Convertion of Object ID into String 
+#     #     """
+#     #     arbitrary_types_allowed = True
+#     #     json_encoders = {
+#     #         ObjectId: str
+#     #         }
+
+# class Membership(BaseModel):
+#     """[summary]
+
+#     Args:
+#         BaseModel ([type]): [description]
+#     """
+#     # id: Optional[PyObjectId] = Field(alias='_id')
+#     channel_id: List[str] = []
+
+#     # class Config:
+#     #     """
+#     #     Convertion of Object ID into String 
+#     #     """
+#     #     arbitrary_types_allowed = True
+#     #     json_encoders = {
+#     #         ObjectId: str
+#     #         }
