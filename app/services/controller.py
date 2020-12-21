@@ -31,9 +31,15 @@ def fetch_channel(id) -> dict:
     Returns:
         channel_details[dict]: [the details of the channel requested]
     """
+    # try:
     channel_details = dict(channel_DB().find_one({"_id": ObjectId(id)}))
-    channel_details.pop("_id")
-    return channel_details
+    if channel_details is None:
+        return "channel not found, wrong id"
+    else:
+        channel_details.pop("_id")
+        return channel_details
+    # except ValueError:
+    #     return "give valid id"
 
 def create_channel(channel: Channel) -> Channel:
     """
@@ -58,7 +64,7 @@ def update_channel(id: str, new_data: Change_channel) -> Channel:
         return "channel not found, wrong id"
     else:
         UPDATE_data = dict(new_data) 
-        
+
         if(UPDATE_data['name']== None):
             UPDATE_data['name']= check_channel['name']
 
@@ -99,7 +105,7 @@ def remove_channel(id: str):
         if delChannel.deleted_count==0:
             raise  RandomError
         else:
-            return("sueach_channelessfully deleted")
+            return("channel sucessfully deleted")
 
     except RandomError:
         return "channel not found"      
