@@ -41,7 +41,7 @@ def fetch_channel(id) -> dict:
     # except ValueError:
     #     return "give valid id"
 
-def create_channel(channel: Channel) -> Channel:
+def create_channel(user_id: str, channel: Channel) -> Channel:
     """
     Args : channel -> Channel
 
@@ -52,7 +52,11 @@ def create_channel(channel: Channel) -> Channel:
     """
     if hasattr(channel, 'id'):
         delattr(channel, 'id')
+    channel.owner = user_id
+    channel.admins.append(user_id)
     channel.created_at= datetime.datetime.now()
+    if(channel.description==""):
+        channel.description = channel.name
     newChannel = channel_DB().insert_one(channel.dict(by_alias=True))
     channel.id = newChannel.inserted_id
     return {'channel': channel}    

@@ -38,11 +38,12 @@ class Channel(BaseModel):
     """
     id: Optional[PyObjectId] = Field(alias='_id')
     name: str
-    description: Optional[str] 
+    description: Optional[str] = "" 
     created_at: Optional[datetime.datetime] 
-    type: str
-    admins:List[str] = []
-    owner:str
+    type: Optional[str] = "public"
+    admins:Optional[List[str]] = []
+    # dp: str
+    owner:Optional[str] = ""
     category: str
 
     class Config:

@@ -32,8 +32,8 @@ async def getChannel(id: str):
     """
     return fetch_channel(id)
 
-@channelsRouter.post('/channels/create')
-async def post_channel(channel: Channel):
+@channelsRouter.post('/channels/create/{user_id}')
+async def post_channel(user_id: str, channel: Channel):
     """
     Args : channel -> Channel
 
@@ -42,7 +42,7 @@ async def post_channel(channel: Channel):
 
     return type : Channel
     """
-    return create_channel(channel)
+    return create_channel(user_id, channel)
 
 @channelsRouter.post("/channels/info/{id}", response_description="update channel")
 async def edit_channel(id: str, new_data: Change_channel):
