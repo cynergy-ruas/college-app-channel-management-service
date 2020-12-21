@@ -111,9 +111,10 @@ def remove_channel(id: str, user_id: str):
 
     else:
         if(check_owner['owner']==user_id):
+            check_owner.pop("_id")
             delChannel=channel_DB().delete_one({"_id":ObjectId(id)})
             if delChannel.deleted_count>0:
-                return("channel sucessfully deleted")
+                return {"channel sucessfully deleted": check_owner}
         else:
             return {'request denied' : "user does not have permission to delete channel"}
         
