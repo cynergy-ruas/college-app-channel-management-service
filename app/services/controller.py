@@ -95,7 +95,7 @@ class RandomError(Error):
     """Raised when the channel is not found"""
     pass
 
-def remove_channel(id: str):
+def remove_channel(id: str, user_id: str):
     """
     Args:
     id -> string
@@ -104,14 +104,19 @@ def remove_channel(id: str):
 
     return type: string
     """
-    try:
-        delChannel=channel_DB().delete_one({"_id":ObjectId(id)})
-        if delChannel.deleted_count==0:
-            raise  RandomError
-        else:
-            return("channel sucessfully deleted")
+    
+    check_owner = channel_DB().find_one({"_id": ObjectId(id)})
+    if check_owner is None:
+        return "channel not found, wrong id"
 
-    except RandomError:
-        return "channel not found"      
+    else:
+        if(check_owner['owner']==user_id):
+            delChannel=channel_DB().delete_one({"_id":ObjectId(id)})
+            if delChannel.deleted_count>0:
+                return("channel sucessfully deleted")
+        else:
+            return {'request denied' : "user does not have permission to delete channel"}
+        
+
 
         

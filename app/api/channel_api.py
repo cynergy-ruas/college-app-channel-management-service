@@ -58,7 +58,7 @@ async def edit_channel(id: str, new_data: Change_channel):
     return update_channel(id, new_data)
 
 @channelsRouter.delete("/channels/delete/{id}", response_description="Delete channel")
-async def delete_channel(id: str):
+async def delete_channel(id: str, user_data: dict):
     """
     Args: 
     id -> String 
@@ -69,6 +69,6 @@ async def delete_channel(id: str):
     Return Type : String
     
     """
-    return remove_channel(id)
+    return remove_channel(id, user_data['user_id'])
 
 
