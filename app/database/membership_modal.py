@@ -34,7 +34,6 @@ class Membership(BaseModel):
         BaseModel:  a base class for building model objects/ schemas
     """
     id: Optional[PyObjectId] = Field(alias='_id')
-    # user_id: Optional[str] = ""
     channel_id: Optional[List[str]] = []
 
     class Config:

@@ -144,8 +144,7 @@ def remove_channel(id: str, user_id: str) -> dict:
                 return {"channel sucessfully deleted": check_owner}
     except pymongo.errors.PyMongoError as err:
         raise  returnExceptions(1004)
-
-# user_data = {"user_id": "[user who need to be added]", "req_user": "[user who is requesting this service]"}        
+      
 def join_user(id: str, user_data: dict) -> dict:    
     """
     Function to add channel to membership of user
@@ -181,8 +180,6 @@ def join_user(id: str, user_data: dict) -> dict:
                         raise returnExceptions(1006)
                 check_user['channel_id'].append(id)
                 check_user.pop('_id')
-                # check_user.pop('user_id')
-                
                 updated_membership = membership_DB().update_one({"_id": ObjectId(user_data["user_id"])}, {"$set": check_user})
             
             return("user added")        
@@ -199,8 +196,7 @@ def join_user(id: str, user_data: dict) -> dict:
                         if(channel==id):
                             raise returnExceptions(1006)
                     check_user['channel_id'].append(id)
-                    check_user.pop('_id')
-                    # check_user.pop('user_id')                        
+                    check_user.pop('_id')                      
                     updated_membership = membership_DB().update_one({"_id": ObjectId(user_data["user_id"])}, {"$set": check_user})
                 else:
                     raise returnExceptions(1005)
@@ -223,8 +219,6 @@ def insert_user(user_id: str ,membership : Membership) -> dict:
     """
     try:
         membership.id = ObjectId(user_id)
-        # if hasattr(membership, 'id'):
-        #     delattr(membership, 'id')
         newuser = membership_DB().insert_one(membership.dict(by_alias=True))
         membership.id = newuser.inserted_id
         return membership
