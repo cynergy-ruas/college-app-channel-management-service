@@ -7,6 +7,6 @@ password = os.environ.get('MONGO_PASSWORD')
 DB_NAME= os.environ.get('MONGO_DB')
 MONGODB_URI ="mongodb+srv://"+user_name+":"+password+"@ruas-app.63rrs.mongodb.net/"+DB_NAME+"?retryWrites=true&w=majority"
 PORT = 8000
-#channels
+#collections 
 CHANNEL_DB = "channels"
 MEMBERSHIP_DB = "membership" 

@@ -28,6 +28,10 @@ def fetch_channels() -> list:
     except pymongo.errors.PyMongoError as err:
         raise  returnExceptions(1004)   
 
+# def find_channel(id):
+#     try:
+#         channel_details = channel_DB().find_one({"_id": ObjectId(id)})
+        
 def fetch_channel(id) -> dict:
     """
     Function to fetch details of a channel with the given id
@@ -165,11 +169,11 @@ def join_user(id: str, user_data: dict) -> dict:
         
         if check_channel is None:
             raise returnExceptions(1003)
-        check_user = membership_DB().find_one({"user_id":user_data["user_id"]}) 
+        check_user = membership_DB().find_one({"_id": ObjectId(user_data["user_id"])}) 
         if check_channel['type']== "public":
             if check_user is None: 
-                membership = Membership(user_id= user_data["user_id"], channel_id=[id])
-                new_user = insert_user(membership)
+                membership = Membership(channel_id=[id])
+                new_user = insert_user(user_data["user_id"],membership)
                 return {'user joined': new_user}
             else:
                 for channel in check_user["channel_id"]:
@@ -177,9 +181,9 @@ def join_user(id: str, user_data: dict) -> dict:
                         raise returnExceptions(1006)
                 check_user['channel_id'].append(id)
                 check_user.pop('_id')
-                check_user.pop('user_id')
+                # check_user.pop('user_id')
                 
-                updated_membership = membership_DB().update_one({"user_id": user_data["user_id"]}, {"$set": check_user})
+                updated_membership = membership_DB().update_one({"_id": ObjectId(user_data["user_id"])}, {"$set": check_user})
             
             return("user added")        
         
@@ -188,16 +192,16 @@ def join_user(id: str, user_data: dict) -> dict:
             for user in admins:
                 if(user_data["req_user"]== user):
                     if check_user is None: 
-                        membership = Membership(user_id= user_data["user_id"], channel_id=[id])
-                        new_user = insert_user(membership)
+                        membership = Membership(channel_id=[id])
+                        new_user = insert_user(user_data["user_id"],membership)
                         return {'user joined': new_user}
                     for channel in check_user["channel_id"]:
                         if(channel==id):
                             raise returnExceptions(1006)
                     check_user['channel_id'].append(id)
                     check_user.pop('_id')
-                    check_user.pop('user_id')                        
-                    updated_membership = membership_DB().update_one({"user_id": user_data["user_id"]}, {"$set": check_user})
+                    # check_user.pop('user_id')                        
+                    updated_membership = membership_DB().update_one({"_id": ObjectId(user_data["user_id"])}, {"$set": check_user})
                 else:
                     raise returnExceptions(1005)
             return("user added")
@@ -207,7 +211,7 @@ def join_user(id: str, user_data: dict) -> dict:
     except pymongo.errors.PyMongoError as err:
         raise returnExceptions(1004)
 
-def insert_user(membership : Membership) -> dict:
+def insert_user(user_id: str ,membership : Membership) -> dict:
     """
     function to insert a membership of user into db
 
@@ -218,8 +222,7 @@ def insert_user(membership : Membership) -> dict:
         membership[dict]: [dict of type Membership from app.database.membership_modal]
     """
     try:
-        userId = "5fe0d360223b1a77c3a11af0"
-        membership.id = ObjectId(userId)
+        membership.id = ObjectId(user_id)
         # if hasattr(membership, 'id'):
         #     delattr(membership, 'id')
         newuser = membership_DB().insert_one(membership.dict(by_alias=True))

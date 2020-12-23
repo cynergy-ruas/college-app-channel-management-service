@@ -27,13 +27,14 @@ class PyObjectId(ObjectId):
         field_schema.update(type='string')
 
 class Membership(BaseModel):
-    """[summary]
+    """
+    schema of MEMBERSHIP_DB
 
     Args:
-        BaseModel ([type]): [description]
+        BaseModel:  a base class for building model objects/ schemas
     """
     id: Optional[PyObjectId] = Field(alias='_id')
-    user_id: Optional[str] = ""
+    # user_id: Optional[str] = ""
     channel_id: Optional[List[str]] = []
 
     class Config:

@@ -14,6 +14,10 @@ class Code(object):
         1009: "channel type is undefined"
     }
 
+    """
+    enum code to point to actual http exception codes
+
+    """
     error_enum_http = {
        1001: 422,
        1002: 404,
