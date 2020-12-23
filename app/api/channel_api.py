@@ -24,11 +24,12 @@ async def get_channels():
     Returns:
         channels[list]: [list of channel[dict]]
     """
-    response =  fetch_channels()
-    if type(response)== returnExceptions:
-        raise HTTPException(status_code=485, detail=str(response))
-    else:
+    try:
+        response =  fetch_channels()
         return response
+    except returnExceptions as err:
+        raise HTTPException(status_code=Code.error_enum_http[err.error_code], detail=str(err))
+
 
 @channelsRouter.get("/channels/user/{user_id}", response_description="list of channels an user is subscribed to")
 async def get_user_channels(user_id: str):
