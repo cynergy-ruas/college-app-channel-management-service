@@ -256,7 +256,7 @@ def user_leave(id: str, user_data: dict)-> list:
 
     try:
         check_channel = channel_DB().find_one({"_id": ObjectId(id)})
-        check_user = membership_DB().find_one({"user_id":user_data["user_id"]})
+        check_user = membership_DB().find_one({"_id":ObjectId(user_data["user_id"])})
 
         if check_channel is None:
             raise returnExceptions(1003) 
@@ -271,8 +271,8 @@ def user_leave(id: str, user_data: dict)-> list:
             else:
                 list_of_channels.remove(id)
                 check_user['channel_id'] = list_of_channels 
-                update_membership = membership_DB().update_one({"user_id": user_data["user_id"]}, {"$set": check_user})
-                updated_membership=membership_DB().find_one({"user_id":user_data["user_id"]})
+                update_membership = membership_DB().update_one({"_id":ObjectId(user_data["user_id"])}, {"$set": check_user})
+                updated_membership=membership_DB().find_one({"_id":ObjectId(user_data["user_id"])})
                 updated_membership.pop("_id")
                 return {"user channels": updated_membership["channel_id"]}
     except pymongo.errors.PyMongoError as err:
