@@ -45,19 +45,41 @@ def insert_channel(channel: Channel):
     
 
 def update_channelinfo(id: str, UPDATE_data: dict):
-    
+    """[summary]
+
+    Args:
+        id (str): [description]
+        UPDATE_data (dict): [description]
+
+    Returns:
+        [type]: [description]
+    """
     update_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": UPDATE_data})
     return update_channel
     
 
 def delete_channel(id: str): 
-    
+    """[summary]
+
+    Args:
+        id (str): [description]
+
+    Returns:
+        [type]: [description]
+    """
     delChannel=channel_DB().delete_one({"_id":ObjectId(id)})
     return delChannel
 
 
 def find_membership(user_id: str):
+    """[summary]
 
+    Args:
+        user_id (str): [description]
+
+    Returns:
+        [type]: [description]
+    """
     user_details = membership_DB().find_one({"_id":ObjectId(user_id)})
     return user_details
 
@@ -81,6 +103,15 @@ def insert_membership(user_id: str ,id : str) -> dict:
 
 
 def update_membership(user_id: str, new_data: dict):
+    """[summary]
+
+    Args:
+        user_id (str): [description]
+        new_data (dict): [description]
+
+    Returns:
+        [type]: [description]
+    """
     updating_membership = membership_DB().update_one({"_id": ObjectId(user_id)}, {"$set": new_data})
     return updating_membership
 
@@ -152,12 +183,12 @@ def create_channel(user_id: str, channel: Channel) -> dict:
         newChannel = insert_channel(channel)
         channel.id = newChannel.inserted_id
         check_user = find_membership(user_id)
-        # if check_user is None:
-        #     insert_membership(user_id, channel.id)
-        # else:
-        #     check_user['channel_id'].append(id)
-        #     check_user.pop('_id')
-        #     update_membership()
+        if check_user is None:
+            insert_membership(user_id, str(channel.id))
+        else:
+            check_user['channel_id'].append(str(channel.id))
+            check_user.pop('_id')
+            updated_membership = update_membership(user_id,check_user)
         return {'channel': channel}
     except pymongo.errors.PyMongoError as err:
         raise returnExceptions(1004)
@@ -204,13 +235,19 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
         raise returnExceptions(1004)
 
 def remove_channel(id: str, user_id: str) -> dict:
-    """
+    """[summary]
+
     Args:
-    id -> string
+        id (str): [description]
+        user_id (str): [description]
 
-    deletes a channel from the database
+    Raises:
+        returnExceptions: [description]
+        returnExceptions: [description]
+        returnExceptions: [description]
 
-    return type: string
+    Returns:
+        dict: [description]
     """
     try:
         check_owner = find_channel(id)
@@ -289,13 +326,17 @@ def join_user(id: str, user_data: dict) -> dict:
 
 
 def fetch_user_membership(user_id: str):
-    """
+    """[summary]
+
     Args:
-    id -> string
+        user_id (str): [description]
 
-    displays all channel_ids from the membership database of that particular user_id
+    Raises:
+        returnExceptions: [description]
+        returnExceptions: [description]
 
-    return type: string
+    Returns:
+        [type]: [description]
     """
     try:          
         check_user = find_membership(user_id)
