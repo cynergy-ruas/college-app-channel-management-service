@@ -241,12 +241,12 @@ def fetch_user_membership(user_id: str):
     return type: string
     """
     try:          
-        check_user = membership_DB().find_one({"user_id": user_id})
+        check_user = membership_DB().find_one({"_id": ObjectId(user_id)})
         
         if check_user is None:
             raise returnExceptions(1002)
         else:
-            if(check_user['user_id']==user_id):
+            if check_user['_id']==ObjectId(user_id):
                 check_user.pop("_id")
                 return {"user channels": check_user["channel_id"]}
     except pymongo.errors.PyMongoError as err:
