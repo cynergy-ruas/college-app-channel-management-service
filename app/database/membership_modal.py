@@ -1,7 +1,6 @@
 from bson import ObjectId
 from typing import List, Optional
 from pydantic import BaseModel, Field
-import datetime 
 
 class PyObjectId(ObjectId):
     """
@@ -27,30 +26,21 @@ class PyObjectId(ObjectId):
     def __modify_schema__(cls, field_schema):
         field_schema.update(type='string')
 
-#creating channel class to store schema 
-class Channel(BaseModel):
-    """
-    schema of CHANNEL_DB
+class Membership(BaseModel):
+    """[summary]
 
     Args:
-        BaseModel : a base class for building model objects/ schemas
+        BaseModel ([type]): [description]
     """
     id: Optional[PyObjectId] = Field(alias='_id')
-    name: str
-    description: Optional[str] = "" 
-    created_at: Optional[datetime.datetime] 
-    type: Optional[str] = "public"
-    admins:Optional[List[str]] = []
-    # dp: str 
-    owner:Optional[str] = ""
-    category: str
+    user_id: Optional[str] = ""
+    channel_id: Optional[List[str]] = []
 
     class Config:
-        """
-        Convertion of Object ID into String 
-        """
-        arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str
-            }
-            
+         """
+         Convertion of Object ID into String 
+         """
+         arbitrary_types_allowed = True
+         json_encoders = {
+             ObjectId: str
+             }
