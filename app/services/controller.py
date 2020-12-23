@@ -10,6 +10,39 @@ import datetime
 from app.services.errorCustom import returnExceptions
 import pymongo
 
+def find_channel(id):
+     try:
+         channel_details = channel_DB().find_one({"_id": ObjectId(id)})
+         return channel_details
+     except pymongo.errors.PyMongoError as err:
+        raise  returnExceptions(1004) 
+
+def insert_channel(channel: Channel):
+    try:
+        newChannel = channel_DB().insert_one(channel.dict(by_alias=True))
+        return newChannel
+    except pymongo.errors.PyMongoError as err:
+        raise  returnExceptions(1004) 
+
+def update_channelinfo(id: str, UPDATE_data: dict):
+    try:
+        update_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": UPDATE_data})
+        return update_channel
+    except pymongo.errors.PyMongoError as err:
+        raise  returnExceptions(1004)
+
+def delete_channel(id: str):
+    try: 
+        delChannel=channel_DB().delete_one({"_id":ObjectId(id)})
+        return delChannel
+    except pymongo.errors.PyMongoError as err:
+        raise  returnExceptions(1004)
+
+
+
+
+
+
 def fetch_channels() -> list:
     """
     Function to fetch all channels from the db
@@ -25,13 +58,10 @@ def fetch_channels() -> list:
         for each_channel in query:
             channels_list.append(Channel(**each_channel))
         return channels_list
-    except pymongo.errors.PyMongoError as err:
-        raise  returnExceptions(1004)   
+ 
 
-# def find_channel(id):
-#     try:
-#         channel_details = channel_DB().find_one({"_id": ObjectId(id)})
-        
+  
+
 def fetch_channel(id) -> dict:
     """
     Function to fetch details of a channel with the given id
@@ -44,15 +74,14 @@ def fetch_channel(id) -> dict:
     """
     
     try:
-        channel_details = channel_DB().find_one({"_id": ObjectId(id)})
+        channel_details = find_channel(id)
         if channel_details is None:
             raise returnExceptions(1003)
         else:
             channel_details = dict(channel_details)
             channel_details.pop("_id")
             return channel_details
-    except pymongo.errors.PyMongoError as err:
-        raise  returnExceptions(1004)
+
         
         
 
@@ -76,11 +105,10 @@ def create_channel(user_id: str, channel: Channel) -> dict:
         channel.created_at= datetime.datetime.now()
         if(channel.description==""):
             channel.description = channel.name
-        newChannel = channel_DB().insert_one(channel.dict(by_alias=True))
+        newChannel = insert_channel(channel)
         channel.id = newChannel.inserted_id
         return {'channel': channel}
-    except pymongo.errors.PyMongoError as err:
-        raise  returnExceptions(1004)
+
                
 
 def update_channel(id: str, new_data: Change_channel) -> dict:
@@ -97,7 +125,7 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
         "channel updated"
     """
     try:
-        check_channel = channel_DB().find_one({"_id": ObjectId(id)})
+        check_channel = find_channel(id)
 
         if check_channel is None:
             raise returnExceptions(1003)
@@ -116,10 +144,10 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
             if(UPDATE_data['category']== None):
                 UPDATE_data['category']= check_channel['category']
 
-            updated_channel = channel_DB().update_one({"_id": ObjectId(id)}, {"$set": UPDATE_data})
-            return "channel info updated"
-    except pymongo.errors.PyMongoError as err:
-        raise returnExceptions(1004)
+            updating_channel = update_channelinfo(id, UPDATE_data)
+            channel_details = find_channel(id)
+            channel_details.pop("_id")
+            return {"channel info updated" : channel_details}
 
 
 def remove_channel(id: str, user_id: str) -> dict:
@@ -132,18 +160,18 @@ def remove_channel(id: str, user_id: str) -> dict:
     return type: string
     """
     try:
-        check_owner = channel_DB().find_one({"_id": ObjectId(id)})
+        check_owner = find_channel(id)
         if check_owner is None:
             raise returnExceptions(1003)
-        if check_owner['owner']==user_id:
+        if check_owner['owner']!=user_id:
+            print(check_owner['owner'],user_id)
             raise returnExceptions(1005)
         else:    
-            delChannel=channel_DB().delete_one({"_id":ObjectId(id)})
+            delChannel= delete_channel(id)
             if delChannel.deleted_count>0:
                 check_owner.pop("_id")
                 return {"channel sucessfully deleted": check_owner}
-    except pymongo.errors.PyMongoError as err:
-        raise  returnExceptions(1004)
+      
       
 def join_user(id: str, user_data: dict) -> dict:    
     """
@@ -164,7 +192,7 @@ def join_user(id: str, user_data: dict) -> dict:
         membership[dict]: [description]
     """
     try:
-        check_channel = channel_DB().find_one({"_id": ObjectId(id)})
+        check_channel = find_channel(id)
         
         if check_channel is None:
             raise returnExceptions(1003)
@@ -249,7 +277,7 @@ def fetch_user_membership(user_id: str):
 def user_leave(id: str, user_data: dict)-> list:    
 
     try:
-        check_channel = channel_DB().find_one({"_id": ObjectId(id)})
+        check_channel = find_channel(id)
         check_user = membership_DB().find_one({"_id":ObjectId(user_data["user_id"])})
 
         if check_channel is None:
