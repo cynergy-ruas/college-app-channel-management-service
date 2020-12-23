@@ -16,9 +16,6 @@ def find_channel(id: str):
     Args:
         id ([str]): [channel id]
 
-    Raises:
-        returnExceptions: ["Oops! Unexpected mongodb error occurred"]
-
     Returns:
         [dict]: [dict of all the channel details]
         [None]: [if channel is not found]
@@ -33,19 +30,16 @@ def insert_channel(channel: Channel):
     Args:
         channel (Channel): [dict containing details of channel to be created]
 
-    Raises:
-        returnExceptions: [Oops! Unexpected mongodb error occurred]
-
     Returns:
-        [type]: [description]
+        new_channel[class 'pymongo.results.InsertOneResult]
     """
 
-    newChannel = channel_DB().insert_one(channel.dict(by_alias=True))
-    return newChannel
+    new_channel = channel_DB().insert_one(channel.dict(by_alias=True))
+    return new_channel
     
 
 def update_channelinfo(id: str, UPDATE_data: dict):
-    """[summary]
+    """Function to update a channel in db
 
     Args:
         id (str): [description]
@@ -59,7 +53,7 @@ def update_channelinfo(id: str, UPDATE_data: dict):
     
 
 def delete_channel(id: str): 
-    """[summary]
+    """Function to delete a channel in db
 
     Args:
         id (str): [description]
@@ -72,7 +66,7 @@ def delete_channel(id: str):
 
 
 def find_membership(user_id: str):
-    """[summary]
+    """Function to find a membership of user in db
 
     Args:
         user_id (str): [description]
@@ -85,8 +79,7 @@ def find_membership(user_id: str):
 
 
 def insert_membership(user_id: str ,id : str) -> dict:
-    """
-    function to insert a membership of user into db
+    """Function to insert a membership of user into db
 
     Args:
         user_id[str]: [user id]
@@ -103,7 +96,7 @@ def insert_membership(user_id: str ,id : str) -> dict:
 
 
 def update_membership(user_id: str, new_data: dict):
-    """[summary]
+    """Function to update a membership of user in db
 
     Args:
         user_id (str): [description]
@@ -117,8 +110,7 @@ def update_membership(user_id: str, new_data: dict):
 
 
 def fetch_channels() -> list:
-    """
-    Function to fetch all channels from the db
+    """Function to fetch all channels from the db
 
     Returns:
         channels[list]: [list of channel[dict]]
@@ -136,9 +128,8 @@ def fetch_channels() -> list:
 
   
 
-def fetch_channel(id) -> dict:
-    """
-    Function to fetch details of a channel with the given id
+def fetch_channel(id: str) -> dict:
+    """Function to fetch details of a channel with the given id
 
     Args:
         id (str): id created by the mongoDB
@@ -161,13 +152,11 @@ def fetch_channel(id) -> dict:
         
 
 def create_channel(user_id: str, channel: Channel) -> dict:
-    """
-    Function to insert a channel into db
+    """Function to insert a channel into db
 
-    [explanation]
-
-    Raises:
-        returnExceptions: [mongo errors]
+    Args:
+        user_id[str] : [id of user requesting this service]
+        channel[dict] : [channel attributes like name,type,..]
 
     Returns:
         [dict]: [created channel is returned]
@@ -180,8 +169,8 @@ def create_channel(user_id: str, channel: Channel) -> dict:
         channel.created_at= datetime.datetime.now()
         if(channel.description==""):
             channel.description = channel.name
-        newChannel = insert_channel(channel)
-        channel.id = newChannel.inserted_id
+        new_channel = insert_channel(channel)
+        channel.id = new_channel.inserted_id
         check_user = find_membership(user_id)
         if check_user is None:
             insert_membership(user_id, str(channel.id))
@@ -195,17 +184,14 @@ def create_channel(user_id: str, channel: Channel) -> dict:
                
 
 def update_channel(id: str, new_data: Change_channel) -> dict:
-    """
-    Function to update info of a channel 
-
-    [explanation]
+    """Function to update info of a channel 
 
     Args:
         id (str): [channel_id]
-        new_data (Change_channel): [description]
+        new_data (Change_channel): [contains data in dict which needs to be changed]
 
     Returns:
-        "channel updated"
+        {"channel info updated": channel_details[dict]}
     """
     try:
         check_channel = find_channel(id)
@@ -235,19 +221,14 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
         raise returnExceptions(1004)
 
 def remove_channel(id: str, user_id: str) -> dict:
-    """[summary]
+    """Function to delete a channel
 
     Args:
         id (str): [description]
         user_id (str): [description]
 
-    Raises:
-        returnExceptions: [description]
-        returnExceptions: [description]
-        returnExceptions: [description]
-
     Returns:
-        dict: [description]
+        {"channel sucessfully deleted": channel_details[dict]}
     """
     try:
         check_owner = find_channel(id)
@@ -271,16 +252,12 @@ def join_user(id: str, user_data: dict) -> dict:
 
     Args:
         id (str): [channel_id]
-        user_data (dict): [user_id[str]: [user being added], 
-                            req_user[str]: [user sending req(may or may not be admin)]]
-
-    Raises:
-        returnExceptions: ["channel Not Found"]
-        returnExceptions: ["User Already Exists"]
-        returnExceptions: ["request denied, user doesn't have permission for this request"]
+        user_data (dict): [ {user_id[str]: [user being added], 
+                            req_user[str]: [user sending req(may or may not be admin)]} ]
 
     Returns:
-        membership[dict]: [description]
+        {'user joined': new_user[dict : details of Membership of user]} or
+        "user added"
     """
     try:
         check_channel = find_channel(id)
@@ -325,18 +302,14 @@ def join_user(id: str, user_data: dict) -> dict:
 
 
 
-def fetch_user_membership(user_id: str):
-    """[summary]
+def fetch_user_membership(user_id: str)-> list:
+    """Function to get channels which user is member  
 
     Args:
-        user_id (str): [description]
-
-    Raises:
-        returnExceptions: [description]
-        returnExceptions: [description]
+        user_id (str): [user id to get membership]
 
     Returns:
-        [type]: [description]
+        "user channels": channels[list : list of channels user is member]]
     """
     try:          
         check_user = find_membership(user_id)
@@ -351,7 +324,15 @@ def fetch_user_membership(user_id: str):
         raise returnExceptions(1004)
 
 def user_leave(id: str, user_data: dict)-> list:    
+    """Function to remove user membership of a channel 
 
+    Args:
+        id (str): [channel id]
+        user_data (dict): [{[user_id[str]: [user being added]}]
+
+    Returns:
+        list: [list of channels user is member]
+    """
     try:
         check_channel = find_channel(id)
         check_user = find_membership(user_data["user_id"])

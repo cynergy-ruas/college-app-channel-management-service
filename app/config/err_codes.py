@@ -4,7 +4,7 @@ class Code(object):
     """
     error_enum = {
         1001: "User Already Exists",
-        1002: "User Not Found ",
+        1002: "User Not Found",
         1003: "channel Not Found",
         1004: "Oops! Unexpected mongodb error occurred",
         1005: "request denied, user doesn't have permission for this request",

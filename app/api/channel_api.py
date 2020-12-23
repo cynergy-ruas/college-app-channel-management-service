@@ -80,7 +80,8 @@ async def post_channel(user_id: str, channel: Channel):
     Endpoint to create a new channel in the database
 
     Args:
-        user_id[str] : for dev purpose, need to get this from header
+        user_id[str] : [for dev purpose, need to get this from header]
+        channel[Channel] : [channel details recieved from body] 
 
     Raises:
         HTTPException: ["Oops! Unexpected mongodb error occurred" or
@@ -104,7 +105,8 @@ async def edit_channel(id: str, new_data: Change_channel):
         id (str): [channel id which is being edited]
     
     Raises:
-        HTTPException: ["Oops! Unexpected mongodb error occurred"]
+        HTTPException: ["Oops! Unexpected mongodb error occurred" or
+                        "channel Not Found"]
     
     Returns:
         Channel [dict]: [updated channel info]
@@ -130,7 +132,7 @@ async def add_user_to_channel( id: str, user_data: dict ):
                         "channel Not Found" or
                         "User Already Exists" or
                         "request denied, user doesn't have permission for this request"
-                        ]
+                        "channel type is undefined"]
 
     Returns:
         membership[dict]: [membership of user is returned]
@@ -151,7 +153,10 @@ async def leave_channel( id: str, user_data: dict ):
         user_data (dict): [user_id[str]: [user being added], 
                             req_user[str]: [user sending req(may or may not be admin)]]
     Raises:
-        HTTPException: ["Oops! Unexpected mongodb error occurred"]
+        HTTPException: ["Oops! Unexpected mongodb error occurred" or
+                        "channel Not Found" or
+                        "User Not Found" or
+                        "user not in channel"]
     
     Returns:
         [type]: [description]
@@ -172,7 +177,9 @@ async def delete_channel(id: str, user_data: dict):
         user_data[dict]: [user_id[str]: [user being added], 
                             req_user[str]: [user sending req(may or may not be owner)]]
     Raises:
-        HTTPException: ["Oops! Unexpected mongodb error occurred"]
+        HTTPException: ["Oops! Unexpected mongodb error occurred", or 
+                        "channel Not Found" or
+                        "request denied, user doesn't have permission for this request"]
 
     Returns:
         deleted_channel[dict]: [details of channel deleted(may be useful if we are gonna meke an undo functionality)]
