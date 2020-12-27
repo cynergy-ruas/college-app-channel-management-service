@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from bson import ObjectId
 from app.database.schema import Channel
 from app.database.update_modal_channel import Change_channel
 from app.database.membership_modal import Membership
@@ -11,7 +10,7 @@ from app.services.controller import (
     fetch_channel,
     user_leave,
     update_channel,
-    join_user,
+    join_user
 )
 
 from app.config.err_codes import Code

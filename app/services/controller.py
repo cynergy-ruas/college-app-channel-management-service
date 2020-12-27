@@ -13,7 +13,6 @@ from app.database.db_queries import (
     delete_channel,
     find_channels_all
 )
-from app.config.config import channel_DB, membership_DB
 from bson import ObjectId
 import datetime
 from app.services.error_custom import returnExceptions

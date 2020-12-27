@@ -1,5 +1,5 @@
 from bson import ObjectId
-from app.config.config import channel_DB, membership_DB
+from app.config.__init__ import MongoDB
 from app.database.membership_modal import Membership
 from app.database.schema import Channel
 
@@ -7,12 +7,12 @@ def find_channels_all(query: dict):
     """Function to find channels using query condition
 
     Args: 
-        query[dict] : the query being used to find channels 
+        query(dict] : the query being used to find channels 
 
     Returns:
         [pymongo.cursor.Cursor]: [it is used in controller to loop through the channels]
     """
-    list_of_channels = channel_DB().find(query)
+    list_of_channels = MongoDB.channel_db().find(query)
     return list_of_channels
 
 
@@ -27,7 +27,7 @@ def find_channel(id: str):
         [dict]: [dict of all the channel details]
         [None]: [if channel is not found]
     """
-    channel_details = channel_DB().find_one({"_id": ObjectId(id)})
+    channel_details = MongoDB.channel_db().find_one({"_id": ObjectId(id)})
     return channel_details
 
 
@@ -41,7 +41,7 @@ def insert_channel(channel: Channel):
         new_channel[class 'pymongo.results.InsertOneResult]
     """
 
-    new_channel = channel_DB().insert_one(channel.dict(by_alias=True))
+    new_channel = MongoDB.channel_db().insert_one(channel.dict(by_alias=True))
     return new_channel
 
 
@@ -55,7 +55,7 @@ def update_channelinfo(id: str, UPDATE_data: dict):
     Returns:
         [type]: [description]
     """
-    update_channel = channel_DB().update_one(
+    update_channel = MongoDB.channel_db().update_one(
         {"_id": ObjectId(id)}, {"$set": UPDATE_data}
     )
     return update_channel
@@ -70,7 +70,7 @@ def delete_channel(id: str):
     Returns:
         [type]: [description]
     """
-    delChannel = channel_DB().delete_one({"_id": ObjectId(id)})
+    delChannel = MongoDB.channel_db().delete_one({"_id": ObjectId(id)})
     return delChannel
 
 
@@ -83,7 +83,7 @@ def find_membership(user_id: str):
     Returns:
         [type]: [description]
     """
-    user_details = membership_DB().find_one({"_id": ObjectId(user_id)})
+    user_details = MongoDB.membership_db().find_one({"_id": ObjectId(user_id)})
     return user_details
 
 
@@ -99,7 +99,7 @@ def insert_membership(user_id: str, id: str) -> dict:
     """
     membership = Membership(channel_id=[id])
     membership.id = ObjectId(user_id)
-    newuser = membership_DB().insert_one(membership.dict(by_alias=True))
+    newuser = MongoDB.membership_db().insert_one(membership.dict(by_alias=True))
     membership.id = newuser.inserted_id
     return membership
 
@@ -114,7 +114,7 @@ def update_membership(user_id: str, new_data: dict):
     Returns:
         [type]: [description]
     """
-    updating_membership = membership_DB().update_one(
+    updating_membership = MongoDB.membership_db().update_one(
         {"_id": ObjectId(user_id)}, {"$set": new_data}
     )
     return updating_membership
