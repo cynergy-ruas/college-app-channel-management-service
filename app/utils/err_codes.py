@@ -12,7 +12,7 @@ class Code(object):
         1007: "user not in channel",
         1008: "All channels are private",
         1009: "channel type is undefined",
-        1010: "invalid data found, parsing error"
+        1010: "invalid id found, InvalidId error"
     }
 
     """

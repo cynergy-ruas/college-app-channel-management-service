@@ -81,7 +81,7 @@ def find_membership(user_id: str):
         user_id(str): description
 
     Returns:
-        (type): description
+        user_details(dict) : Membership of the user from membership db 
     """
     user_details = MongoDB.membership_db().find_one({"_id": ObjectId(user_id)})
     return user_details
@@ -112,7 +112,7 @@ def update_membership(user_id: str, new_data: dict):
         new_data (dict): description
 
     Returns:
-        (type): description
+        (class 'pymongo.results.UpdateResult'): sent by mongodb 
     """
     updating_membership = MongoDB.membership_db().update_one(
         {"_id": ObjectId(user_id)}, {"$set": new_data}

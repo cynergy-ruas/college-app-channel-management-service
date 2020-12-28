@@ -2,7 +2,6 @@ from fastapi import FastAPI, APIRouter, HTTPException
 from app.models.channel_model import Channel
 from app.models.update_model_channel import Change_channel
 from app.models.membership_model import Membership
-from bson.objectid import ObjectId
 from dateutil.parser import ParserError
 from app.database.db_queries import (
     find_channel,
@@ -14,7 +13,7 @@ from app.database.db_queries import (
     delete_channel,
     find_channels_all
 )
-from bson import ObjectId
+from bson import ObjectId, errors
 import datetime
 from app.utils.err_custom import ReturnExceptions
 import pymongo
@@ -32,8 +31,7 @@ def fetch_channels() -> list:
         1008: when no channels of "type": "public" is found \
              in channel db(404)
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500)
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)
 
     """
     try:
@@ -61,8 +59,7 @@ def fetch_channel(id: str) -> dict:
     Raises:
         1003: when channel is not found in channel db(404)
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500)
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)
     """
 
     try:
@@ -75,7 +72,8 @@ def fetch_channel(id: str) -> dict:
             return channel_details
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
 
 
@@ -91,8 +89,7 @@ def create_channel(user_id: str, channel: Channel) -> dict:
     
     Raises:
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500)
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)
     """
     try:
         if hasattr(channel, "id"):
@@ -114,8 +111,10 @@ def create_channel(user_id: str, channel: Channel) -> dict:
         return {"channel": channel}
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
+    
 
 
 def update_channel(id: str, new_data: Change_channel) -> dict:
@@ -131,8 +130,7 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
     Raises:
         1003: when channel is not found in channel db(404)
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500)  
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)  
     """
     try:
         check_channel = find_channel(id)
@@ -160,7 +158,8 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
             return {"channel info updated": channel_details}
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
 
 
@@ -179,8 +178,7 @@ def remove_channel(id: str, user_id: str) -> dict:
         1005: the channel being joined is "type" : "private" and \
             the req_user is not an admin of the channel (401)
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500)  
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)  
     """
     try:
         check_owner = find_channel(id)
@@ -196,7 +194,8 @@ def remove_channel(id: str, user_id: str) -> dict:
                 return {"channel sucessfully deleted": check_owner}
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
 
 
@@ -221,8 +220,7 @@ def join_user(id: str, user_data: dict) -> dict:
         1005: the channel being joined is "type" : "private" and \
             the req_user is not an admin of the channel (401)
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500) 
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500) 
     """
     try:
         check_channel = find_channel(id)
@@ -266,7 +264,8 @@ def join_user(id: str, user_data: dict) -> dict:
             raise ReturnExceptions(1009)
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
 
 
@@ -283,8 +282,7 @@ def fetch_user_membership(user_id: str) -> list:
         1002: when user is not found in membership db(404) \
             meaning user not a member of any channel 
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500) 
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500) 
         
     """
     try:
@@ -298,7 +296,8 @@ def fetch_user_membership(user_id: str) -> list:
                 return {"user channels": check_user["channel_id"]}
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
 
 
@@ -319,8 +318,7 @@ def user_leave(id: str, user_data: dict) -> list:
         1007: when Membership of user doesn't have channel_id, \
             meaning user not a member of that channel(422)
         1004: mongo err occured(500)
-        1010: parsing err occured due to invalid format \
-             of data passed from channel_api(500)   
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)   
     """
     try:
         check_channel = find_channel(id)
@@ -347,7 +345,8 @@ def user_leave(id: str, user_data: dict) -> list:
                 return {"user channels": updated_membership["channel_id"]}
     except pymongo.errors.PyMongoError as err:
         raise ReturnExceptions(1004)
-    except ParserError as err:
+
+    except errors.InvalidId as err:
         raise ReturnExceptions(1010)
 
 
