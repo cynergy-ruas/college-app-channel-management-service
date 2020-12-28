@@ -155,7 +155,7 @@ async def leave_channel(id: str, user_data: dict):
                             req_user(str): user sending req(may or may not be admin)
 
     Returns:
-        [type]: [description]
+        membership channels(list): list of channel_id in user membership after updating it 
     """
     try:
         response = user_leave(id, user_data)

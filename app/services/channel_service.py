@@ -29,6 +29,11 @@ def fetch_channels() -> list:
         channels(list): list of Channel(dict)
 
     Raises:
+        1008: when no channels of "type": "public" is found \
+             in channel db(404)
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500)
 
     """
     try:
@@ -54,7 +59,10 @@ def fetch_channel(id: str) -> dict:
         channel_details(dict): the details of the channel requested
     
     Raises:
-        
+        1003: when channel is not found in channel db(404)
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500)
     """
 
     try:
@@ -82,7 +90,9 @@ def create_channel(user_id: str, channel: Channel) -> dict:
         dict: created channel's details are returned
     
     Raises:
-        
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500)
     """
     try:
         if hasattr(channel, "id"):
@@ -119,7 +129,10 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
         {"channel info updated": channel_details[dict]}
 
     Raises:
-        
+        1003: when channel is not found in channel db(404)
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500)  
     """
     try:
         check_channel = find_channel(id)
@@ -162,7 +175,12 @@ def remove_channel(id: str, user_id: str) -> dict:
         {"channel sucessfully deleted": channel_details(dict)}
     
     Raises:
-        
+        1003: when channel is not found in channel db(404)
+        1005: the channel being joined is "type" : "private" and \
+            the req_user is not an admin of the channel (401)
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500)  
     """
     try:
         check_owner = find_channel(id)
@@ -197,7 +215,14 @@ def join_user(id: str, user_data: dict) -> dict:
         "user added"
     
     Raises:
-        
+        1003: when channel is not found in channel db(404)
+        1006: when req joining channel_id from user already \
+            exists in user Membership(422)
+        1005: the channel being joined is "type" : "private" and \
+            the req_user is not an admin of the channel (401)
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500) 
     """
     try:
         check_channel = find_channel(id)
@@ -255,6 +280,11 @@ def fetch_user_membership(user_id: str) -> list:
         "user channels": channels(list) : list of channels user is member
     
     Raises:
+        1002: when user is not found in membership db(404) \
+            meaning user not a member of any channel 
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500) 
         
     """
     try:
@@ -283,7 +313,14 @@ def user_leave(id: str, user_data: dict) -> list:
         list: list of channels user is member
 
     Raises:
-        
+        1003: when channel is not found in channel db(404)
+        1002: when user is not found in membership db(404) \
+            meaning user not a member of any channel    
+        1007: when Membership of user doesn't have channel_id, \
+            meaning user not a member of that channel(422)
+        1004: mongo err occured(500)
+        1010: parsing err occured due to invalid format \
+             of data passed from channel_api(500)   
     """
     try:
         check_channel = find_channel(id)
