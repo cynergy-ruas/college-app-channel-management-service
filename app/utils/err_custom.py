@@ -1,7 +1,7 @@
-from app.config.err_codes import Code
+from app.utils.err_codes import Code
 from pymongo.errors import PyMongoError
 
-class returnExceptions(Exception):
+class ReturnExceptions(Exception):
     """
     Custom exception for channel management rest api to be used for specific repeatable
     api related exceptions.

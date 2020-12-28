@@ -11,7 +11,8 @@ class Code(object):
         1006: "user already in channel",
         1007: "user not in channel",
         1008: "All channels are private",
-        1009: "channel type is undefined"
+        1009: "channel type is undefined",
+        1010: "invalid data found, parsing error"
     }
 
     """
@@ -27,7 +28,8 @@ class Code(object):
        1006: 422,
        1007: 422,
        1008: 422,
-       1009: 424
+       1009: 424,
+       1010: 500
     }
     @staticmethod
     def return_error_enum(code):
