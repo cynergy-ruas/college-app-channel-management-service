@@ -11,14 +11,12 @@ from app.database.db_queries import (
     update_membership,
     update_channelinfo,
     delete_channel,
-    find_channels_all
+    find_channels_all,
 )
 from bson import ObjectId, errors
 import datetime
 from app.utils.err_custom import ReturnExceptions
 import pymongo
-
-
 
 
 def fetch_channels() -> list:
@@ -55,7 +53,7 @@ def fetch_channel(id: str) -> dict:
 
     Returns:
         channel_details(dict): the details of the channel requested
-    
+
     Raises:
         1003: when channel is not found in channel db(404)
         1004: mongo err occured(500)
@@ -86,7 +84,7 @@ def create_channel(user_id: str, channel: Channel) -> dict:
 
     Returns:
         dict: created channel's details are returned
-    
+
     Raises:
         1004: mongo err occured(500)
         1010: when invalid format of id(str) is passed into ObjectId(id)(500)
@@ -114,7 +112,6 @@ def create_channel(user_id: str, channel: Channel) -> dict:
 
     except errors.InvalidId as err:
         raise ReturnExceptions(1010)
-    
 
 
 def update_channel(id: str, new_data: Change_channel) -> dict:
@@ -130,7 +127,7 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
     Raises:
         1003: when channel is not found in channel db(404)
         1004: mongo err occured(500)
-        1010: when invalid format of id(str) is passed into ObjectId(id)(500)  
+        1010: when invalid format of id(str) is passed into ObjectId(id)(500)
     """
     try:
         check_channel = find_channel(id)
@@ -301,15 +298,15 @@ def fetch_user_membership(user_id: str) -> list:
         raise ReturnExceptions(1010)
 
 
-def user_leave(id: str, user_data: dict) -> list:
+def user_leave(id: str, user_id: str) -> list:
     """Function to remove user membership of a channel
 
     Args:
         id (str): channel id
-        user_data (dict): {user_id(str): user being added}
+        user_id(str): id of user leaving
 
     Returns:
-        list: list of channels user is member
+        list: list of user's membership channels' ids
 
     Raises:
         1003: when channel is not found in channel db(404)
@@ -322,7 +319,7 @@ def user_leave(id: str, user_data: dict) -> list:
     """
     try:
         check_channel = find_channel(id)
-        check_user = find_membership(user_data["user_id"])
+        check_user = find_membership(user_id)
 
         if check_channel is None:
             raise ReturnExceptions(1003)
@@ -337,10 +334,8 @@ def user_leave(id: str, user_data: dict) -> list:
             else:
                 list_of_channels.remove(id)
                 check_user["channel_id"] = list_of_channels
-                updating_membership = update_membership(
-                    user_data["user_id"], check_user
-                )
-                updated_membership = find_membership(user_data["user_id"])
+                updating_membership = update_membership(user_id, check_user)
+                updated_membership = find_membership(user_id)
                 updated_membership.pop("_id")
                 return {"user channels": updated_membership["channel_id"]}
     except pymongo.errors.PyMongoError as err:

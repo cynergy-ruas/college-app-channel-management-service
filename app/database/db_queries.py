@@ -3,18 +3,18 @@ from app.database.__init__ import MongoDB
 from app.models.membership_model import Membership
 from app.models.channel_model import Channel
 
+
 def find_channels_all(query: dict):
     """Function to find channels using query condition
 
-    Args: 
-        query(dict) : the query being used to find channels 
+    Args:
+        query(dict) : the query being used to find channels
 
     Returns:
         (pymongo.cursor.Cursor): it is used in channel_service to loop through the channels
     """
     list_of_channels = MongoDB.channel_db().find(query)
     return list_of_channels
-
 
 
 def find_channel(id: str):
@@ -81,7 +81,7 @@ def find_membership(user_id: str):
         user_id(str): description
 
     Returns:
-        user_details(dict) : Membership of the user from membership db 
+        user_details(dict) : Membership of the user from membership db
     """
     user_details = MongoDB.membership_db().find_one({"_id": ObjectId(user_id)})
     return user_details
@@ -112,7 +112,7 @@ def update_membership(user_id: str, new_data: dict):
         new_data (dict): description
 
     Returns:
-        (class 'pymongo.results.UpdateResult'): sent by mongodb 
+        (class 'pymongo.results.UpdateResult'): sent by mongodb
     """
     updating_membership = MongoDB.membership_db().update_one(
         {"_id": ObjectId(user_id)}, {"$set": new_data}

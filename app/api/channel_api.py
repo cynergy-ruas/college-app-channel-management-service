@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
+from typing import Optional
 from app.models.channel_model import Channel
 from app.models.update_model_channel import Change_channel
 from app.models.membership_model import Membership
@@ -21,7 +22,10 @@ from app.utils.err_custom import ReturnExceptions
 channels_router = APIRouter()
 
 # channel endpoints
-@channels_router.get("/channels/all")
+@channels_router.get(
+    "/channels/all",
+    response_description="list of all public channels with details in the db",
+)
 async def get_channels():
     """
     Endpoint to get all the channels
@@ -39,21 +43,20 @@ async def get_channels():
 
 
 @channels_router.get(
-    "/channels/user/{user_id}",
-    response_description="list of channels an user is subscribed to",
+    "/channels/user", response_description="list of user's membership channels' id"
 )
-async def get_user_channels(user_id: str):
+async def get_user_channels(app_user_id: Optional[str] = Header(None)):
     """
     Endpoint to get user_channels
 
     Args:
-        user_id(str): "user id to check in membership db"
+        app_user_id(str): "user id to check in membership db"
 
     Returns:
         user_channels(list): list of all the channels user is member
     """
     try:
-        response = fetch_user_membership(user_id)
+        response = fetch_user_membership(app_user_id)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
@@ -61,19 +64,21 @@ async def get_user_channels(user_id: str):
         )
 
 
-@channels_router.get("/channels/info/{id}")
-async def get_channel_info(id: str):
+@channels_router.get(
+    "/channels/info", response_description="dict of requested channel's details"
+)
+async def get_channel_info(app_channel_id: Optional[str] = Header(None)):
     """
     Endpoint to get info of a channel
 
     Args:
-         id (str): channel_id of channel whose info is required
+         app_channel_id(str): channel_id of channel whose info is required
 
     Returns:
          channel_info(dict): details of the channel
     """
     try:
-        response = fetch_channel(id)
+        response = fetch_channel(app_channel_id)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
@@ -81,20 +86,22 @@ async def get_channel_info(id: str):
         )
 
 
-@channels_router.post("/channels/create/{user_id}")
-async def post_channel(user_id: str, channel: Channel):
+@channels_router.post(
+    "/channels/create", response_description="dict of created channel's details"
+)
+async def post_channel(channel: Channel, app_user_id: Optional[str] = Header(None)):
     """
     Endpoint to create a new channel in the database
 
     Args:
-        user_id(str) : for dev purpose, need to get this from header
+        app_user_id(str) : id of user creating the channel
         channel(Channel) : channel details recieved from body
 
     Returns:
         channel (dict): created channel is returned
     """
     try:
-        response = create_channel(user_id, channel)
+        response = create_channel(app_user_id, channel)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
@@ -102,19 +109,23 @@ async def post_channel(user_id: str, channel: Channel):
         )
 
 
-@channels_router.post("/channels/info/{id}", response_description="update channel")
-async def edit_channel(id: str, new_data: Change_channel):
+@channels_router.post(
+    "/channels/info", response_description="dict of updated channel's details"
+)
+async def edit_channel(
+    new_data: Change_channel, app_channel_id: Optional[str] = Header(None)
+):
     """
     Endpoint to update info of a channel
 
     Args:
-        id (str): channel id which is being edited
+        app_channel_id(str): channel's id which is being edited
 
     Returns:
         Channel (dict): updated channel info
     """
     try:
-        response = update_channel(id, new_data)
+        response = update_channel(app_channel_id, new_data)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
@@ -122,13 +133,19 @@ async def edit_channel(id: str, new_data: Change_channel):
         )
 
 
-@channels_router.post("/channels/join/{id}")
-async def add_user_to_channel(id: str, user_data: dict):
+# user_data also should be retrieved from header
+@channels_router.post(
+    "/channels/join",
+    response_description="dict of user's membership details or user added",
+)
+async def add_user_to_channel(
+    user_data: dict, app_channel_id: Optional[str] = Header(None)
+):
     """
     Endpoint to add user to a channel
 
     Args:
-        id (str): channel_id
+        app_channel_id(str): channel's id user is requesting to join
         user_data (dict): user_id(str) is user being added,
                             req_user(str): user sending req(may or may not be admin)
 
@@ -136,7 +153,7 @@ async def add_user_to_channel(id: str, user_data: dict):
         membership(dict): membership of user is returned
     """
     try:
-        response = join_user(id, user_data)
+        response = join_user(app_channel_id, user_data)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
@@ -144,21 +161,26 @@ async def add_user_to_channel(id: str, user_data: dict):
         )
 
 
-@channels_router.post("/channels/leave/{id}")
-async def leave_channel(id: str, user_data: dict):
+@channels_router.post(
+    "/channels/leave",
+    response_description="list of user's updated membership channels' ids",
+)
+async def leave_channel(
+    app_user_id: Optional[str] = Header(None),
+    app_channel_id: Optional[str] = Header(None),
+):
     """
     Endpoint to for an user to leave a channel
 
     Args:
-        id (str): channel_id
-        user_data (dict): user_id(str) is user being added,
-                            req_user(str): user sending req(may or may not be admin)
+        app_channel_id(str): channel's id user is requesting to leave
+        app_user_id(str): user leaving channel
 
     Returns:
-        membership channels(list): list of channel_id in user membership after updating it 
+        membership channels(list): list of channel_id in user membership after updating it
     """
     try:
-        response = user_leave(id, user_data)
+        response = user_leave(app_channel_id, app_user_id)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
@@ -166,21 +188,25 @@ async def leave_channel(id: str, user_data: dict):
         )
 
 
-@channels_router.delete("/channels/delete/{id}", response_description="Delete channel")
-async def delete_channel(id: str, user_data: dict):
+@channels_router.delete(
+    "/channels/delete", response_description="deleted channel details is returned"
+)
+async def delete_channel(
+    app_user_id: Optional[str] = Header(None),
+    app_channel_id: Optional[str] = Header(None),
+):
     """
     Endpoint to delete a channel
 
     Args:
-        id(str): channel_id
-        user_data(dict): user_id(str): user being added,
-                            req_user(str): user sending req(may or may not be owner)
+        app_channel_id(str): channel_id
+        app_user_id(str): user sending req(may or may not be owner)
 
     Returns:
-        deleted_channel(dict): details of channel deleted(may be useful if we are gonna meke an undo functionality)
+        deleted_channel(dict): details of channel deleted(may be useful if we are gonna make an undo functionality)
     """
     try:
-        response = remove_channel(id, user_data["user_id"])
+        response = remove_channel(app_channel_id, app_user_id)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
