@@ -135,21 +135,21 @@ def update_channel(id: str, new_data: Change_channel) -> dict:
         if check_channel is None:
             raise ReturnExceptions(1003)
         else:
-            UPDATE_data = dict(new_data)
+            update_data = dict(new_data)
 
-            if UPDATE_data["name"] == None:
-                UPDATE_data["name"] = check_channel["name"]
+            if update_data["name"] == None:
+                update_data["name"] = check_channel["name"]
 
-            if UPDATE_data["description"] == None:
-                UPDATE_data["description"] = check_channel["description"]
+            if update_data["description"] == None:
+                update_data["description"] = check_channel["description"]
 
-            if UPDATE_data["type"] == None:
-                UPDATE_data["type"] = check_channel["type"]
+            if update_data["type"] == None:
+                update_data["type"] = check_channel["type"]
 
-            if UPDATE_data["category"] == None:
-                UPDATE_data["category"] = check_channel["category"]
+            if update_data["category"] == None:
+                update_data["category"] = check_channel["category"]
 
-            updating_channel = update_channelinfo(id, UPDATE_data)
+            updating_channel = update_channelinfo(id, update_data)
             channel_details = find_channel(id)
             channel_details.pop("_id")
             return {"channel info updated": channel_details}
@@ -218,6 +218,7 @@ def join_user(id: str, req_user_id: str, user_id: str) -> dict:
         1005: the channel being joined is "type" : "private" and \
             the req_user is not an admin of the channel (401)
         1004: mongo err occured(500)
+        1009: when Channel "type" : "public" or "private" this err occures(424)
         1010: when invalid format of id(str) is passed into ObjectId(id)(500) 
     """
     try:

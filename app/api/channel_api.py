@@ -148,8 +148,9 @@ async def add_user_to_channel(
 
     Args:
         app_channel_id(str): channel's id user is requesting to join
-        user_data (dict): user_id(str) is user being added,
-                            req_user(str): user sending req(may or may not be admin)
+        user_data (dict): {user_id(str) id of user being added or user who is joining channel}
+        app_user_id(str): user id of user requesting(admin in case of private channel or \
+             same as user_id incase of public)
 
     Returns:
         membership(dict): membership of user is returned
