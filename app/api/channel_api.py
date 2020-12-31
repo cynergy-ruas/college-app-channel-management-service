@@ -139,7 +139,9 @@ async def edit_channel(
     response_description="dict of user's membership details or user added",
 )
 async def add_user_to_channel(
-    user_data: dict, app_channel_id: Optional[str] = Header(None)
+    user_data: dict,
+    app_user_id: Optional[str] = Header(None),
+    app_channel_id: Optional[str] = Header(None),
 ):
     """
     Endpoint to add user to a channel
@@ -153,7 +155,7 @@ async def add_user_to_channel(
         membership(dict): membership of user is returned
     """
     try:
-        response = join_user(app_channel_id, user_data)
+        response = join_user(app_channel_id,app_user_id, user_data["user_id"])
         return response
     except ReturnExceptions as err:
         raise HTTPException(

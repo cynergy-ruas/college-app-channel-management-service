@@ -196,15 +196,16 @@ def remove_channel(id: str, user_id: str) -> dict:
         raise ReturnExceptions(1010)
 
 
-def join_user(id: str, user_data: dict) -> dict:
+def join_user(id: str, req_user_id: str, user_id: str) -> dict:
     """
     Function to add channel to membership of user
         or create user in membership
 
     Args:
-        id (str): [channel_id]
-        user_data (dict): {user_id(str): user being added,
-                            req_user(str): user sending req(may or may not be admin)} 
+        id (str): channel_id
+        req_user_id(str): user id of user requesting(admin in case of private channel or \
+             same as user_id incase of public)
+        user_id (str): user being added or user who is joining channel,
 
     Returns:
         {'user joined': new_user(dict) : details of Membership of user} or
@@ -224,10 +225,10 @@ def join_user(id: str, user_data: dict) -> dict:
 
         if check_channel is None:
             raise ReturnExceptions(1003)
-        check_user = find_membership(user_data["user_id"])
+        check_user = find_membership(user_id)
         if check_channel["type"] == "public":
             if check_user is None:
-                new_user = insert_membership(user_data["user_id"], id)
+                new_user = insert_membership(user_id, id)
                 return {"user joined": new_user}
             else:
                 for channel in check_user["channel_id"]:
@@ -235,15 +236,15 @@ def join_user(id: str, user_data: dict) -> dict:
                         raise ReturnExceptions(1006)
                 check_user["channel_id"].append(id)
                 check_user.pop("_id")
-                updated_membership = update_membership(user_data["user_id"], check_user)
+                updated_membership = update_membership(user_id, check_user)
             return "user added"
 
         elif check_channel["type"] == "private":
             admins = check_channel["admins"]
             for user in admins:
-                if user_data["req_user"] == user:
+                if req_user_id == user:
                     if check_user is None:
-                        new_user = insert_membership(user_data["user_id"], id)
+                        new_user = insert_membership(user_id, id)
                         return {"user joined": new_user}
                     for channel in check_user["channel_id"]:
                         if channel == id:
@@ -251,7 +252,7 @@ def join_user(id: str, user_data: dict) -> dict:
                     check_user["channel_id"].append(id)
                     check_user.pop("_id")
                     updated_membership = update_membership(
-                        user_data["user_id"], check_user
+                        user_id, check_user
                     )
                 else:
                     raise ReturnExceptions(1005)
