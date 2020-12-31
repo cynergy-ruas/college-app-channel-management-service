@@ -218,7 +218,7 @@ def join_user(id: str, req_user_id: str, user_id: str) -> dict:
         1005: the channel being joined is "type" : "private" and \
             the req_user is not an admin of the channel (401)
         1004: mongo err occured(500)
-        1009: when Channel "type" : "public" or "private" this err occures(424)
+        1009: when Channel "type" : is neither "public" nor "private" this err occures(424)
         1010: when invalid format of id(str) is passed into ObjectId(id)(500) 
     """
     try:
