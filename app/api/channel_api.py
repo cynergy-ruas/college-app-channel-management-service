@@ -18,6 +18,7 @@ from app.utils.err_codes import Code
 
 # V1 add_admin,
 from app.utils.err_custom import ReturnExceptions
+import base64
 
 channels_router = APIRouter()
 
@@ -148,7 +149,9 @@ async def add_user_to_channel(
 
     Args:
         app_channel_id(str): channel's id user is requesting to join
-        user_data (dict): {user_id(str) id of user being added or user who is joining channel}
+        user_data (dict): {user_id(base64 encoded ascii string, \
+             how to encode: url"https://www.geeksforgeeks.org/encoding-and-decoding-base64-strings-in-python/") \
+                 id of user being added or user who is joining channel}
         app_user_id(str): user id of user requesting(admin in case of private channel or \
              same as user_id incase of public)
 
@@ -156,7 +159,8 @@ async def add_user_to_channel(
         membership(dict): membership of user is returned
     """
     try:
-        response = join_user(app_channel_id,app_user_id, user_data["user_id"])
+        user_id = base64.b64decode(user_data["user_id"].encode("ascii")).decode("ascii")
+        response = join_user(app_channel_id, app_user_id, user_id)
         return response
     except ReturnExceptions as err:
         raise HTTPException(
