@@ -2,7 +2,6 @@ from fastapi import FastAPI, APIRouter, HTTPException
 from app.models.channel_model import Channel
 from app.models.update_model_channel import Change_channel
 from app.models.membership_model import Membership
-from dateutil.parser import ParserError
 from app.database.db_queries import (
     find_channel,
     insert_channel,
