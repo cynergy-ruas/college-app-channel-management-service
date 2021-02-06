@@ -1,4 +1,4 @@
-from app.configs import DB_NAME, MONGO_URL, MEMBERSHIP_DB, CHANNEL_DB
+from app.configs import DB_NAME, MONGO_URL, MEMBERSHIP_COLL, CHANNEL_COLL
 from pymongo import MongoClient
 
 
@@ -41,7 +41,7 @@ class MongoDB:
              This Returns the collection
         """
 
-        return MongoDB.get_database()[CHANNEL_DB]
+        return MongoDB.get_database()[CHANNEL_COLL]
 
     @staticmethod
     def membership_db():
@@ -51,4 +51,4 @@ class MongoDB:
              This Returns the collection
         """
 
-        return MongoDB.get_database()[MEMBERSHIP_DB]
+        return MongoDB.get_database()[MEMBERSHIP_COLL]

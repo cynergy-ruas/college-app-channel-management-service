@@ -24,7 +24,7 @@ channels_router = APIRouter()
 
 # channel endpoints
 @channels_router.get(
-    "/channels/all",
+    "/channel/all",
     response_description="list of all public channels with details in the db",
 )
 async def get_channels():
@@ -44,7 +44,7 @@ async def get_channels():
 
 
 @channels_router.get(
-    "/channels/user", response_description="list of user's membership channels' id"
+    "/channel/user", response_description="list of user's membership channels' id"
 )
 async def get_user_channels(app_user_id: Optional[str] = Header(None)):
     """
@@ -66,7 +66,7 @@ async def get_user_channels(app_user_id: Optional[str] = Header(None)):
 
 
 @channels_router.get(
-    "/channels/info", response_description="dict of requested channel's details"
+    "/channel/info", response_description="dict of requested channel's details"
 )
 async def get_channel_info(app_channel_id: Optional[str] = Header(None)):
     """
@@ -88,7 +88,7 @@ async def get_channel_info(app_channel_id: Optional[str] = Header(None)):
 
 
 @channels_router.post(
-    "/channels/create", response_description="dict of created channel's details"
+    "/channel/create", response_description="dict of created channel's details"
 )
 async def post_channel(channel: Channel, app_user_id: Optional[str] = Header(None)):
     """
@@ -111,7 +111,7 @@ async def post_channel(channel: Channel, app_user_id: Optional[str] = Header(Non
 
 
 @channels_router.post(
-    "/channels/info", response_description="dict of updated channel's details"
+    "/channel/info", response_description="dict of updated channel's details"
 )
 async def edit_channel(
     new_data: Change_channel, app_channel_id: Optional[str] = Header(None)
@@ -136,7 +136,7 @@ async def edit_channel(
 
 # user_data also should be retrieved from header
 @channels_router.post(
-    "/channels/join",
+    "/channel/join",
     response_description="dict of user's membership details or user added",
 )
 async def add_user_to_channel(
@@ -169,7 +169,7 @@ async def add_user_to_channel(
 
 
 @channels_router.post(
-    "/channels/leave",
+    "/channel/leave",
     response_description="list of user's updated membership channels' ids",
 )
 async def leave_channel(
@@ -196,7 +196,7 @@ async def leave_channel(
 
 
 @channels_router.delete(
-    "/channels/delete", response_description="deleted channel details is returned"
+    "/channel/delete", response_description="deleted channel details is returned"
 )
 async def delete_channel(
     app_user_id: Optional[str] = Header(None),
@@ -221,7 +221,7 @@ async def delete_channel(
         )
 
 
-# @channels_router.post('/channels/admin/{id}/{user_id}')
+# @channels_router.post('/channel/admin/{id}/{user_id}')
 # async def make_admin( id: str, user_id: str, user_data: dict):
 #     try:
 #         response = add_admin(id, user_id, user_data)
